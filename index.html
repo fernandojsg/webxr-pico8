@@ -74,8 +74,13 @@
 
 				let info = chartInfo[cart];
 				var link = document.getElementById("cart-info");
-				link.setAttribute("href", info.link);
-				link.innerText = info.title + " by " + info.author;
+				if (info) {
+					link.setAttribute("href", info.link);
+					link.innerText = info.title + " by " + info.author;
+				} else {
+					link.setAttribute("href", "");
+					link.innerText = "unknown";
+				}
 
 				picoIframe.setAttribute("src", `carts/${cart}.html`);
 				document.querySelector("button").style.visibility = "visible";
@@ -87,6 +92,9 @@
 
 			function init() {
 				const urlObject = new URL(window.location);
+				const cart = urlObject.searchParams.get("cart") || "celeste";
+				document.querySelector(".button").innerText = `Load "${cart}" cart`;
+
 				const handedness = urlObject.searchParams.has('handedness') ? urlObject.searchParams.get('handedness') : "right";
 				if (handedness === "left") {
 					stickHand = "right";
