@@ -23,7 +23,7 @@
 			</a>
 			<br/>
 			<br/>
-			<span>Cart:<a href="https://www.lexaloffle.com/bbs/?tid=2145">Celeste by noel</a></span>
+			<span>Cart:<a id="cart-info" href="">none</a></span>
 		</header>
 		<div class="container">
 			<a href="#" class="button" onclick="loadCart()">Load cart</a>
@@ -37,9 +37,11 @@
 		</script>
 		<script type="module">
 
-			const chartOptions = {
+			const chartInfo = {
 				celeste: {
-
+					"title": "Celeste",
+					"author": "noel",
+					"link": "https://www.lexaloffle.com/bbs/?tid=2145"
 				},
 			};
 
@@ -69,9 +71,14 @@
 				document.querySelector(".container").style.display = "none";
 				const urlObject = new URL(window.location);
 				const cart = urlObject.searchParams.get("cart") || "celeste";
+
+				let info = chartInfo[cart];
+				var link = document.getElementById("cart-info");
+				link.setAttribute("href", info.link);
+				link.innerText = info.title + " by " + info.author;
+
 				picoIframe.setAttribute("src", `carts/${cart}.html`);
 				document.querySelector("button").style.visibility = "visible";
-				//setupGameCanvas();
 			}
 
 			window.setupGameCanvas = setupGameCanvas;
