@@ -116,6 +116,7 @@
 					} );
 				}
 
+				// Redirect all the key input to the iframe so you can play also with your keyboard
 				window.addEventListener( "keydown", ev => {
 
 					picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": ev.keyCode } ) );
@@ -163,7 +164,17 @@
 
 			}
 
-			let prevState = {
+			function getComponentValues( handedness, name ) {
+
+				let controller = controllers[ handedness ];
+				if (controller.children[ 0 ].motionController) {
+					let component = controller.children[ 0 ].motionController.components[ name ];
+					return component ? component.values : {};
+				}
+				return {};
+			}
+
+			let prevButtonPressed = {
 				x: false,
 				y: false,
 				up: false,
@@ -172,106 +183,39 @@
 				right: false
 			};
 
-			function getComponentValues( handedness, name ) {
-
-				let controller = controllers[ handedness ];
-				let component = controller.children[ 0 ].motionController.components[ name ];
-				return component ? component.values : {};
-			}
-
+			let keyCodes = {
+				x: 88,
+				y: 90,
+				up: 38,
+				down: 40,
+				left: 37,
+				right: 39
+			};
 
 			function processInput() {
+				let x = getComponentValues( buttonsHand, buttonsHand === "right" ? "a-button" : "x-button" ).state === MotionControllerConstants.ComponentState.PRESSED;
+				let y = getComponentValues( buttonsHand, buttonsHand === "right" ? "b-button" : "y-button" ).state === MotionControllerConstants.ComponentState.PRESSED;
 
-					let x = getComponentValues( buttonsHand, buttonsHand === "right" ? "a-button" : "x-button" ).state === MotionControllerConstants.ComponentState.PRESSED;
-					let y = getComponentValues( buttonsHand, buttonsHand === "right" ? "b-button" : "y-button" ).state === MotionControllerConstants.ComponentState.PRESSED;
+				let axisX = getComponentValues( stickHand, "xr-standard-thumbstick" ).xAxis;
+				let axisY = getComponentValues( stickHand, "xr-standard-thumbstick" ).yAxis;
 
-					let axisX = getComponentValues( stickHand, "xr-standard-thumbstick" ).xAxis;
-					let axisY = getComponentValues( stickHand, "xr-standard-thumbstick" ).yAxis;
+				let buttonPressed = {
+					x,
+					y,
+					left: axisX < - 0.5,
+					right: axisX > 0.5,
+					down: axisY > 0.5,
+					up: axisY < - 0.5
+				};
 
-					let right = axisX > 0.5;
-					let left = axisX < - 0.5;
-					let down = axisY > 0.5;
-					let up = axisY < - 0.5;
-
-					//console.log(up, down, left, right);
-
-			// z: 90
-			// x: 88
-			// up: 38
-			// down: 40
-			// left: 37
-			// right: 39
-
-					if ( up && ! prevState.up ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 38 } ) );
-
-		} else if ( ! up && prevState.up ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 38 } ) );
-
-		}
-
-					if ( right && ! prevState.right ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 39 } ) );
-
-		} else if ( ! right && prevState.right ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 39 } ) );
-
-		}
-
-					if ( left && ! prevState.left ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 37 } ) );
-
-		} else if ( ! left && prevState.left ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 37 } ) );
-
-		}
-
-					if ( down && ! prevState.down ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 40 } ) );
-
-		} else if ( ! down && prevState.down ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 40 } ) );
-
-		}
-
-
-
-					if ( x && ! prevState.x ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 88 } ) );
-
-		} else if ( ! x && prevState.x ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 88 } ) );
-
-		}
-
-
-					if ( y && ! prevState.y ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 90 } ) );
-
-		} else if ( ! y && prevState.y ) {
-
-						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 90 } ) );
-
-		}
-
-					prevState.x = x;
-					prevState.y = y;
-					prevState.up = up;
-					prevState.left = left;
-					prevState.down = down;
-					prevState.right = right;
-
+				for (let button in buttonPressed) {
+					if (buttonPressed[button] && !prevButtonPressed[button]) {
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": keyCodes[button] } ) );
+					} else if (!buttonPressed[button] && prevButtonPressed[button]) {
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": keyCodes[button] } ) );
+					}
+					prevButtonPressed[button] = buttonPressed[button];
+				}
 			}
 
 			function render() {
@@ -293,7 +237,7 @@
 		<iframe
 			id="pico8"
 			src="carts/plat.html"
-			width="200" height="200">
+			width="0" height="0">
 		</iframe>
 	</body>
 </html>
