@@ -1,6 +1,19 @@
+@font-face{
+  font-family: 'Zilla Slab';
+  src: url('https://code.cdn.mozilla.net/fonts/woff/ZillaSlab-SemiBold.woff');
+  src: url('https://code.cdn.mozilla.net/fonts/woff2/ZillaSlab-SemiBold.woff2') format('woff2'),
+       url('https://code.cdn.mozilla.net/fonts/woff/ZillaSlab-SemiBold.woff') format('woff'),
+       url('https://code.cdn.mozilla.net/fonts/otf/ZillaSlab(-SemiBold).otf') format('opentype'),
+       url('https://code.cdn.mozilla.net/fonts/ttf/ZillaSlab-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
 html, body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  font-family: 'Zilla Slab', sans-serif;
 }
 
 iframe {
@@ -9,5 +22,41 @@ iframe {
 }
 canvas {
   position: absolute;
-  z-index: 99;
+  z-index: 1;
+}
+
+header {
+  position: absolute;
+  width: calc(100vw - 1rem);
+  margin-top: 1rem;
+  text-align: right;
+  z-index: 2;
+}
+
+header a {
+  text-decoration: none;
+  color: #000;
+  margin-left: 0.8rem;
+  vertical-align: top;
+}
+header a path{
+  fill: #000;
+}
+header a:hover {
+  color: #059;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+header a:hover path, #mrlogo:hover path.mrlogobg{
+  fill: #059;
+}
+#handedness a{
+  margin-left: 0.3rem;
+}
+.activehand {
+  background: #000;
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: 5px;
+  pointer-events: none;
 }
