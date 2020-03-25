@@ -15,12 +15,8 @@
 			import {
 				Constants as MotionControllerConstants
 			} from 'https://unpkg.com/three/examples/jsm/libs/motion-controllers.module.js';
-			import { GeometryUtils } from 'https://unpkg.com/three/examples/jsm/utils/GeometryUtils.js';
 
 			var camera, scene, renderer, mesh, material;
-			var controller1, controller2;
-			var console;
-			var controllerGrip1, controllerGrip2;
 			var controllers = {
 				left: null,
 				right: null
@@ -29,28 +25,30 @@
 			var stickHand = "left";
 			var buttonsHand = "right";
 			var picoIframe;
+			var materialLoaded = false;
 
 			init();
 			animate();
 
-			function init() {
 
-				picoIframe = document.getElementById( "pico8" );
+			function init() {
+				const urlObject = new URL(window.location);
+
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x111111 );
 
-				material = new THREE.MeshBasicMaterial();
-
 				scene.add( new THREE.HemisphereLight() );
 
+				// "TV"
 				let sizeB = 3.2;
-				let material2 = new THREE.MeshStandardMaterial( {
+				mesh = new THREE.Mesh( new THREE.BoxBufferGeometry( sizeB, sizeB, 0.1 ), new THREE.MeshStandardMaterial( {
 					color: 0x222222
-				} );
-				mesh = new THREE.Mesh( new THREE.BoxBufferGeometry( sizeB, sizeB, 0.1 ), material2 );
+				} ) );
 				mesh.position.set( 2.5, 2.3, - 7.2 );
 				scene.add( mesh );
 
+				// Render area for the game
+				material = new THREE.MeshBasicMaterial();
 				let size = 3;
 				mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( size, size ), material );
 				mesh.position.set( 2.5, 2.3, - 7.11 );
@@ -63,8 +61,8 @@
 				renderer.xr.enabled = true;
 				document.body.appendChild( renderer.domElement );
 
-				controller1 = renderer.xr.getController( 0 );
-				controller2 = renderer.xr.getController( 1 );
+				var controller1 = renderer.xr.getController( 0 );
+				var controller2 = renderer.xr.getController( 1 );
 
 				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 2000 );
 				camera.position.set( 0, 1.65, 4 );
@@ -76,7 +74,6 @@
 				cameraRig.add( controller1 );
 				cameraRig.add( controller2 );
 
-
 				// The XRControllerModelFactory will automatically fetch controller models
 				// that match what the user is holding as closely as possible. The models
 				// should be attached to the object returned from getControllerGrip in
@@ -84,7 +81,7 @@
 
 				var controllerModelFactory = new XRControllerModelFactory();
 
-				controllerGrip1 = renderer.xr.getControllerGrip( 0 );
+				var controllerGrip1 = renderer.xr.getControllerGrip( 0 );
 				controllerGrip1.addEventListener( 'connected', ( event ) => {
 
 					controllers[ event.data.handedness ] = controllerGrip1;
@@ -92,8 +89,7 @@
 				} );
 				controllerGrip1.add( controllerModelFactory.createControllerModel( controllerGrip1 ) );
 
-
-				controllerGrip2 = renderer.xr.getControllerGrip( 1 );
+				var controllerGrip2 = renderer.xr.getControllerGrip( 1 );
 				controllerGrip2.add( controllerModelFactory.createControllerModel( controllerGrip2 ) );
 				controllerGrip2.addEventListener( 'connected', ( event ) => {
 
@@ -111,13 +107,14 @@
 
 				scene.add( mesh );
 
-				var loader = new GLTFLoader().setPath( 'assets/' );
-				loader.load( 'hall_empty.glb', function ( gltf ) {
+				if (!urlObject.searchParams.has("noroom")) {
+					var loader = new GLTFLoader().setPath( 'assets/' );
+					loader.load( 'hall_empty.glb', function ( gltf ) {
 
-					console = gltf.scene;
-					scene.add( console );
+						scene.add( gltf.scene );
 
-				} );
+					} );
+				}
 
 				window.addEventListener( "keydown", ev => {
 
@@ -131,6 +128,13 @@
 
 				} );
 
+				picoIframe = document.getElementById( "pico8" );
+				const cart = urlObject.searchParams.get("cart") || "celeste";
+
+				picoIframe.onload = () => {
+					setupGameCanvas();
+				}
+				picoIframe.setAttribute("src", `carts/${cart}.html`);
 				setupGameCanvas();
 			}
 
@@ -140,6 +144,8 @@
 				material.map.encoding =THREE.sRGBEncoding;
 				material.map.minFilter = THREE.NearestFilter;
 				material.map.magFilter = THREE.NearestFilter;
+				material.map.needsUpdate = true;
+				materialLoaded = true;
 			}
 
 			function onWindowResize() {
@@ -175,8 +181,6 @@
 
 
 			function processInput() {
-
-				if ( controllerGrip2.children[ 0 ].motionController && controllerGrip1.children[ 0 ].motionController ) {
 
 					let x = getComponentValues( buttonsHand, buttonsHand === "right" ? "a-button" : "x-button" ).state === MotionControllerConstants.ComponentState.PRESSED;
 					let y = getComponentValues( buttonsHand, buttonsHand === "right" ? "b-button" : "y-button" ).state === MotionControllerConstants.ComponentState.PRESSED;
@@ -268,20 +272,17 @@
 					prevState.down = down;
 					prevState.right = right;
 
-	}
-
 			}
 
 			function render() {
-
-				processInput();
-
-				material.map.needsUpdate = true;
+				if (materialLoaded) {
+					material.map.needsUpdate = true;
+				}
 
 				renderer.render( scene, camera );
 
 				if ( renderer.xr.isPresenting ) {
-
+					processInput();
 					let picoWindow = picoIframe.contentWindow;
 					picoWindow.Browser.mainLoop.runner();
 
@@ -291,8 +292,8 @@
 		</script>
 		<iframe
 			id="pico8"
-			src="carts/celeste.html"
-			width="0" height="0">
+			src="carts/plat.html"
+			width="200" height="200">
 		</iframe>
 	</body>
 </html>

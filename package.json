@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Pico8 WebXR player",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fernandojsg/webxr-pico8.git"
@@ -14,5 +13,11 @@
   "bugs": {
     "url": "https://github.com/fernandojsg/webxr-pico8/issues"
   },
-  "homepage": "https://github.com/fernandojsg/webxr-pico8#readme"
+  "homepage": "https://github.com/fernandojsg/webxr-pico8#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^2.0.2"
+  }
 }
