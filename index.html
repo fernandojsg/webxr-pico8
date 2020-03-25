@@ -70,7 +70,11 @@
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x111111 );
 
-				scene.add( new THREE.HemisphereLight() );
+				scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
+
+				var light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 1, 1, 1 ).normalize();
+				scene.add( light );
 
 				// "TV"
 				let sizeB = 3.2;
