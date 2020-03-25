@@ -43,16 +43,14 @@
 
 			var stickHand = "left";
 			var buttonsHand = "right";
+			var picoIframe;
 
 			init();
-			setTimeout( () => {
-
-				setupCanvasDrawing();
-				animate();
-			}, 1000 );
+			animate();
 
 			function init() {
 
+				picoIframe = document.getElementById( "pico8" );
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x111111 );
 
@@ -138,37 +136,25 @@
 
 				window.addEventListener( "keydown", ev => {
 
-					document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": ev.keyCode } ) );
+					picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": ev.keyCode } ) );
 
 				} );
 
 				window.addEventListener( "keyup", ev => {
 
-					document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": ev.keyCode } ) );
+					picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": ev.keyCode } ) );
 
 				} );
 
+				setupGameCanvas();
 			}
 
-			// Sets up the drawing canvas and adds it as the material map
-
-			function setupCanvasDrawing() {
-
-				// get canvas and context
-				var canvas = document.getElementById( 'pico8' ).contentWindow.document.querySelector( 'canvas' ); //document.getElementById( 'drawing-canvas' );
-				var context = canvas.getContext( '2d' );
-
-				// draw white background
-
-				context.fillStyle = '#FFFFFF';
-				context.fillRect( 0, 0, 128, 128 );
-
-				// set canvas as material.map (this could be done to any map, bump, displacement etc.)
-
+			function setupGameCanvas() {
+				var canvas = document.getElementById( 'pico8' ).contentWindow.document.querySelector( 'canvas' );
 				material.map = new THREE.CanvasTexture( canvas );
+				material.map.encoding =THREE.sRGBEncoding;
 				material.map.minFilter = THREE.NearestFilter;
 				material.map.magFilter = THREE.NearestFilter;
-
 			}
 
 			function onWindowResize() {
@@ -229,41 +215,41 @@
 
 					if ( up && ! prevState.up ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 38 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 38 } ) );
 
 		} else if ( ! up && prevState.up ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 38 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 38 } ) );
 
 		}
 
 					if ( right && ! prevState.right ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 39 } ) );
-			
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 39 } ) );
+
 		} else if ( ! right && prevState.right ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 39 } ) );
-			
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 39 } ) );
+
 		}
 
 					if ( left && ! prevState.left ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 37 } ) );
-			
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 37 } ) );
+
 		} else if ( ! left && prevState.left ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 37 } ) );
-			
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 37 } ) );
+
 		}
 
 					if ( down && ! prevState.down ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 40 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 40 } ) );
 
 		} else if ( ! down && prevState.down ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 40 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 40 } ) );
 
 		}
 
@@ -271,22 +257,22 @@
 
 					if ( x && ! prevState.x ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 88 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 88 } ) );
 
 		} else if ( ! x && prevState.x ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 88 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 88 } ) );
 
 		}
 
 
 					if ( y && ! prevState.y ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 90 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": 90 } ) );
 
 		} else if ( ! y && prevState.y ) {
 
-						document.getElementById( "pico8" ).contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 90 } ) );
+						picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": 90 } ) );
 
 		}
 
@@ -311,7 +297,7 @@
 
 				if ( renderer.xr.isPresenting ) {
 
-					let picoWindow = document.getElementById( "pico8" ).contentWindow;
+					let picoWindow = picoIframe.contentWindow;
 					picoWindow.Browser.mainLoop.runner();
 
 				}
@@ -321,8 +307,7 @@
 		<iframe
 			id="pico8"
 			src="carts/celeste.html"
-			width="0" height="0"
-			>
+			width="0" height="0">
 		</iframe>
 	</body>
 </html>
