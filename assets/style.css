@@ -60,3 +60,33 @@ header a:hover path, #mrlogo:hover path.mrlogobg{
   border-radius: 5px;
   pointer-events: none;
 }
+
+.container {
+  position:absolute;
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  background: #000;
+  color: #fff;
+  height: 40px;
+  font-size: 2em;
+  padding: 3px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  border: 2px solid #fff;
+}
+
+.button:hover {
+  background: #fff;
+  color: #000;
+}
+
+button {
+  visibility: hidden;
+}
