@@ -30,7 +30,7 @@ header {
   width: calc(100vw - 1rem);
   margin-top: 1rem;
   text-align: right;
-  z-index: 2;
+  z-index: 20;
 }
 
 header a {
