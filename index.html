@@ -52,6 +52,7 @@
 			};
 
       import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+			import { PointerLockControls } from 'https://unpkg.com/three/examples/jsm/controls/PointerLockControls.js';
       import { VRButton } from 'https://unpkg.com/three/examples/jsm/webxr/VRButton.js';
 			import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
 			import { XRControllerModelFactory } from 'https://unpkg.com/three/examples/jsm/webxr/XRControllerModelFactory.js';
@@ -59,7 +60,7 @@
 				Constants as MotionControllerConstants
 			} from 'https://unpkg.com/three/examples/jsm/libs/motion-controllers.module.js';
 
-			var camera, scene, renderer, mesh, material;
+			var camera, scene, renderer, mesh, material, controls;
 			var controllers = {
 				left: null,
 				right: null
@@ -69,6 +70,14 @@
 			var buttonsHand = "right";
 			var picoIframe;
 			var materialLoaded = false;
+
+			var moveForward = false;
+			var moveBackward = false;
+			var moveLeft = false;
+			var moveRight = false;
+			var prevTime = performance.now();
+			var velocity = new THREE.Vector3();
+			var direction = new THREE.Vector3();
 
 			init();
 			animate();
@@ -93,6 +102,7 @@
 
 				picoIframe.setAttribute("src", `carts/${cart}.html`);
 				document.querySelector("button").style.visibility = "visible";
+				controls.lock();
 			}
 
 			window.loadCart = loadCart;
@@ -159,6 +169,8 @@
 				cameraRig.add( controller1 );
 				cameraRig.add( controller2 );
 
+				controls = new PointerLockControls( cameraRig, document.body );
+
 				// The XRControllerModelFactory will automatically fetch controller models
 				// that match what the user is holding as closely as possible. The models
 				// should be attached to the object returned from getControllerGrip in
@@ -201,13 +213,13 @@
 
 				// Redirect all the key input to the iframe so you can play also with your keyboard
 				window.addEventListener( "keydown", ev => {
-
+					onKeyDown(ev);
 					picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keydown", { "keyCode": ev.keyCode } ) );
 
 				} );
 
 				window.addEventListener( "keyup", ev => {
-
+					onKeyUp(ev);
 					picoIframe.contentWindow.document.dispatchEvent( new KeyboardEvent( "keyup", { "keyCode": ev.keyCode } ) );
 
 				} );
@@ -216,6 +228,48 @@
 				picoIframe.onload = () => {
 					setupGameCanvas();
 				}
+
+				var onKeyDown = function ( event ) {
+
+						switch ( event.keyCode ) {
+							case 87: // w
+								moveForward = true;
+								break;
+
+							case 65: // a
+								moveLeft = true;
+								break;
+
+							case 83: // s
+								moveBackward = true;
+								break;
+
+							case 68: // d
+								moveRight = true;
+								break;
+						}
+
+					};
+
+				var onKeyUp = function ( event ) {
+
+					switch ( event.keyCode ) {
+						case 87: // w
+							moveForward = false;
+							break;
+						case 65: // a
+							moveLeft = false;
+							break;
+						case 83: // s
+							moveBackward = false;
+							break;
+						case 68: // d
+							moveRight = false;
+							break;
+					}
+
+				};
+
 				// setupGameCanvas();
 			}
 
@@ -307,6 +361,30 @@
 				}
 			}
 
+			function processKeyboard() {
+				if ( controls.isLocked === true ) {
+					var time = performance.now();
+					var delta = ( time - prevTime ) / 1000;
+
+					velocity.x -= velocity.x * 10.0 * delta;
+					velocity.z -= velocity.z * 10.0 * delta;
+
+					direction.z = Number( moveForward ) - Number( moveBackward );
+					direction.x = Number( moveRight ) - Number( moveLeft );
+					direction.normalize(); // this ensures consistent movements in all directions
+
+					if ( moveForward || moveBackward ) velocity.z -= direction.z * 40.0 * delta;
+					if ( moveLeft || moveRight ) velocity.x -= direction.x * 40.0 * delta;
+
+					controls.moveRight( - velocity.x * delta );
+					controls.moveForward( - velocity.z * delta );
+
+					prevTime = time;
+
+				}
+
+			}
+
 			function render() {
 				if (materialLoaded) {
 					material.map.needsUpdate = true;
@@ -314,11 +392,12 @@
 
 				renderer.render( scene, camera );
 
+				processKeyboard();
+
 				if ( renderer.xr.isPresenting ) {
 					processInput();
 					let picoWindow = picoIframe.contentWindow;
 					picoWindow.Browser.mainLoop.runner();
-
 				}
 			}
 		</script>
