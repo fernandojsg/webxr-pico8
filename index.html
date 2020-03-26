@@ -14,6 +14,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="assets/style.css">
+		<link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
 		<header>
@@ -32,6 +33,11 @@
 			<span>Cart:<a id="cart-info" href="">none</a></span>
 		</header>
 		<div class="container">
+			<div class="select">
+				<select id="carts">
+				</select>
+				<div class="select__arrow"></div>
+			</div>
 			<a href="#" class="button" onclick="loadCart()">Load cart</a>
 		</div>
 		<script>
@@ -49,7 +55,68 @@
 					"author": "noel",
 					"link": "https://www.lexaloffle.com/bbs/?tid=2145"
 				},
+				deep: {
+					"title": "The Merciless Deep",
+					"author" : "benjamin_soule",
+					"link": "https://www.lexaloffle.com/bbs/?tid=36914"
+				},
+				desert_drift: {
+					"title": "Desert drift",
+					"author" : "johanp",
+					"link": "https://www.lexaloffle.com/bbs/?pid=55232"
+				},
+				katamari: {
+					"title": "Katamari",
+					"author" : "p01",
+					"link": "https://www.lexaloffle.com/bbs/?uid=28958"
+				},
+				pico_arcade: {
+					"title": "Pico arcade",
+					"author" : "thattomhall",
+					"link": "https://www.lexaloffle.com/bbs/?tid=36689"
+				},
+				polarpanic: {
+					"title": "Polar panic",
+					"author" : "johanp",
+					"link": "https://www.lexaloffle.com/bbs/?tid=36118"
+				},
+				x_wing: {
+					"title": "X-Wing Pico Squadron",
+					"author" : "xavier",
+					"link": "https://www.lexaloffle.com/bbs/?tid=28996"
+				},
+				x_zero: {
+					"title": "X-Zero",
+					"author" : "paranoidcactus",
+					"link": "https://www.lexaloffle.com/bbs/?tid=36053"
+				},
+				plat: {
+					"title": "Tomb of G'Nir",
+					"author" : "paranoidcactus",
+					"link": "https://www.lexaloffle.com/bbs/?pid=52574"
+				},
+				tennis: {
+					"title": "Pico Tennis",
+					"author": "paranoidcactus",
+					"link": "https://www.lexaloffle.com/bbs/?tid=31450"
+				}
 			};
+
+			let cartsEl = document.getElementById("carts");
+			const urlObject = new URL(window.location);
+			let selected = urlObject.searchParams.get("cart");
+
+			for (let cartName in chartInfo) {
+				let option = document.createElement("option");
+				option.setAttribute("value", cartName);
+				if (selected === cartName) {
+					option.setAttribute("selected", "selected");
+				}
+
+				let info = chartInfo[cartName];
+				option.innerText = `${info.title}`;
+				cartsEl.appendChild(option);
+			}
 
       import * as THREE from 'https://unpkg.com/three/build/three.module.js';
 			import { PointerLockControls } from 'https://unpkg.com/three/examples/jsm/controls/PointerLockControls.js';
@@ -82,10 +149,11 @@
 			init();
 			animate();
 
+
+
 			function loadCart() {
 				document.querySelector(".container").style.display = "none";
-				const urlObject = new URL(window.location);
-				const cart = urlObject.searchParams.get("cart") || "celeste";
+				const cart = document.getElementById("carts").value;
 
 				let info = chartInfo[cart];
 				var link = document.getElementById("cart-info");
@@ -103,6 +171,9 @@
 				picoIframe.setAttribute("src", `carts/${cart}.html`);
 				document.querySelector("button").style.visibility = "visible";
 				controls.lock();
+				document.addEventListener("click", () => {
+					controls.lock();
+				});
 			}
 
 			window.loadCart = loadCart;
@@ -110,8 +181,6 @@
 			function init() {
 				const urlObject = new URL(window.location);
 				const cart = urlObject.searchParams.get("cart") || "celeste";
-				document.querySelector(".button").innerText = `Load "${cart}" cart`;
-
 				const handedness = urlObject.searchParams.has('handedness') ? urlObject.searchParams.get('handedness') : "right";
 				if (handedness === "left") {
 					stickHand = "right";
@@ -270,10 +339,6 @@
 
 				};
 
-				document.addEventListener("click", () => {
-					controls.lock();
-				});
-
 				// setupGameCanvas();
 			}
 
@@ -396,12 +461,12 @@
 
 				renderer.render( scene, camera );
 
-				processKeyboard();
-
 				if ( renderer.xr.isPresenting ) {
 					processInput();
 					let picoWindow = picoIframe.contentWindow;
 					picoWindow.Browser.mainLoop.runner();
+				} else {
+					processKeyboard();
 				}
 			}
 		</script>

@@ -62,6 +62,7 @@ header a:hover path, #mrlogo:hover path.mrlogobg{
 }
 
 .container {
+  flex-direction: column;
   position:absolute;
   z-index: 10;
   display: flex;
@@ -89,4 +90,69 @@ header a:hover path, #mrlogo:hover path.mrlogobg{
 
 button {
   visibility: hidden;
+}
+
+
+
+
+/* Select box */
+.control {
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.select {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 15px;
+  width: 300px;
+}
+.select select {
+  font-family: 'Zilla Slab', sans-serif;
+  font-size: 1.5em;
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+  padding: 10px 15px;
+  outline: 0;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  color: #000;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.select select::-ms-expand {
+  display: none;
+}
+.select select:hover,
+.select select:focus {
+  color: #000;
+  background: #fff;
+}
+.select select:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.select__arrow {
+  position: absolute;
+  top: 22px;
+  right: 15px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-width: 8px 5px 0 5px;
+  border-color: #7b7b7b transparent transparent transparent;
+}
+.select select:hover ~ .select__arrow,
+.select select:focus ~ .select__arrow {
+  border-top-color: #000;
+}
+.select select:disabled ~ .select__arrow {
+  border-top-color: #ccc;
 }
