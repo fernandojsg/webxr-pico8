@@ -156,3 +156,13 @@ button {
 .select select:disabled ~ .select__arrow {
   border-top-color: #ccc;
 }
+
+.footer {
+  position: absolute;
+  bottom: 10px;
+  z-index: 99;
+}
+
+.footer > .button {
+  font-size: 1.5em;
+}

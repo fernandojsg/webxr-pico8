@@ -32,6 +32,9 @@
 			<br/>
 			<span>Cart:<a id="cart-info" href="">none</a></span>
 		</header>
+		<div class="footer" style="visibility: hidden">
+			<a href="#" class="button" onclick="event.stopPropagation(); showCartsMenu()">Show carts menu</a>
+		</div>
 		<div class="container">
 			<div class="select">
 				<select id="carts">
@@ -41,6 +44,13 @@
 			<a href="#" class="button" onclick="loadCart()">Load cart</a>
 		</div>
 		<script>
+
+			function showCartsMenu(event) {
+				document.querySelector(".footer").style.visibility = "hidden";
+				document.querySelector(".container").style.visibility = "visible";
+				return false;
+			}
+
 			function setHandedness(link, hand) {
 				var currentURL = new URL(window.location);
 				currentURL.searchParams.set('handedness', hand);
@@ -145,9 +155,8 @@
 			animate();
 
 
-
 			function loadCart() {
-				document.querySelector(".container").style.display = "none";
+				document.querySelector(".container").style.visibility = "hidden";
 				const cart = document.getElementById("carts").value;
 
 				let info = chartInfo[cart];
@@ -167,8 +176,11 @@
 				document.querySelector("button").style.visibility = "visible";
 				controls.lock();
 				document.addEventListener("click", () => {
-					controls.lock();
+					if (document.querySelector(".container").style.visibility === "hidden") {
+						controls.lock();
+					}
 				});
+				document.querySelector(".footer").style.visibility = "visible";
 			}
 
 			window.loadCart = loadCart;
