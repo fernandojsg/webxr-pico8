@@ -16,7 +16,7 @@ It's important to notice that when entering VR, the `window.requestAnimationFram
 
 # Credits
 Assets:
-* (Hall model)[https://github.com/MozillaReality/hello-webxr/blob/master/assets/hall_variants/hall_empty.glb] ([Hello WebXR variant](https://github.com/mozillareality/hello-webxr)) by (Diego Goberna)[https://twitter.com/feiss]
+* [Hall model](https://github.com/MozillaReality/hello-webxr/blob/master/assets/hall_variants/hall_empty.glb) ([Hello WebXR variant](https://github.com/mozillareality/hello-webxr)) by [Diego Goberna](https://twitter.com/feiss)
 
 Pico-8 Carts:
 * [Celeste by noel](https://www.lexaloffle.com/bbs/?tid=2145)
