@@ -1,5 +1,5 @@
 # webxr-pico8
-WebXR Pico8 Player
+WebXR Pico8 Player: https://fernandojsg.github.io/webxr-pico8/
 
 ![screenshot](https://fernandojsg.github.io/webxr-pico8/assets/screenshot.png)
 
