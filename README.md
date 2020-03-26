@@ -1,7 +1,7 @@
 # webxr-pico8
 WebXR Pico8 Player
 
-![screenshot](https://raw.githubusercontent.com/fernandojsg/webxr-pico8/master/assets/screenshot.png)
+![screenshot](https://fernandojsg.github.io/webxr-pico8/assets/screenshot.png)
 
 # Introduction
 Proof of concept on how to integrate already existing non immersive games in a WebXR application.
